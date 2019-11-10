@@ -1,0 +1,65 @@
+<ion-header>
+	<ion-toolbar>
+		<ion-title>AjeluApp</ion-title>
+		<ion-icon (click)="openSettings($event)" name="settings" slot="end" size="large" class="mr-3"></ion-icon>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content>
+	<ion-card>
+		<ion-card-content [ngClass]="{ 'fullheight': routeCreated == false }">
+			<!-- Preview of the generated route -->
+			<div *ngIf="routeCreated && waypoints">
+				<div class="ml-3">
+					<ion-icon name="information-circle-outline"></ion-icon>
+					<span *ngIf="routeInfo.distance.text && routeInfo.duration.text">
+						{{ routeInfo.distance.text }} - {{ routeInfo.duration.text }}
+					</span>
+				</div>
+
+				<div class="mapContainer">
+					<div *ngIf="generateLoading" class="mapLoadingContainer">
+						<!--Loading-->
+					</div>
+					<agm-map 
+						appMapDirections
+						[showDirection]="true"
+						[origin]="currentLocation"
+						[waypoints]="waypoints"
+						[destination]="waypoints[indexOfLastWaypoint]"
+						[optimizeWaypoints]="false"
+						[zoom]="14"
+						[disableDefaultUI]="false"
+						[zoomControl]="false"
+					>
+						<agm-marker *ngIf="currentLocation"
+							[latitude]="currentLocation.lat"
+							[longitude]="currentLocation.lng">
+						</agm-marker>
+						<ng-container *ngIf="waypoints.length > 0">
+							<agm-marker *ngFor="let leg of waypoints"
+								[latitude]="leg.lat"
+								[longitude]="leg.lng">
+							</agm-marker>
+						</ng-container>
+						
+					</agm-map>
+				</div>
+			</div>
+
+			<!-- Buttons and propery settings -->
+			<div [ngClass]="routeCreated == false ? 'verticalCenter' : 'pullToBottom'">
+
+				<ion-button [disabled]="generateLoading || goLoading" (click)="generate()" color="primary" expand="block">
+					<span *ngIf="!generateLoading">GENERATE</span>
+					<ion-spinner name="dots" *ngIf="generateLoading"></ion-spinner>
+				</ion-button>
+				<ion-button [disabled]="generateLoading || goLoading" *ngIf="routeCreated" (click)="start()" color="success" expand="block">
+					<span *ngIf="!goLoading">GO!</span>
+					<ion-spinner name="dots" *ngIf="goLoading"></ion-spinner>
+				</ion-button>
+			</div>
+			
+		</ion-card-content>
+	</ion-card>
+</ion-content>

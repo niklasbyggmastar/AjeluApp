@@ -1,0 +1,12 @@
+{
+  "settings": {
+    "distance": {
+      "min": 90,
+      "max": 112
+    },
+    "duration": {
+      "min": 0,
+      "max": 10
+    }
+  }
+}

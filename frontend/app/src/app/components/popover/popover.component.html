@@ -1,0 +1,33 @@
+<ion-content *ngIf="!settingsService.settings">
+	<ion-text class="d-block m-auto ion-text-center">Loading</ion-text>
+	<ion-spinner class="d-block m-auto" name="dots"></ion-spinner>
+</ion-content>
+
+<ion-content *ngIf="settingsService.settings">
+	<ion-list fullscreen>
+		<ion-list-header size="large">Settings</ion-list-header>
+		<!-- Distance -->
+		<ion-label class="ml-3">Distance range (km)</ion-label>
+		<ion-item class="mx-4">
+			<ion-input placeholder="min" slot="start" [(ngModel)]="settingsService.settings.distance.min" type="number"></ion-input>
+			<span slot="start"> - </span>
+			<ion-input placeholder="max" class="float-right ml-3" [(ngModel)]="settingsService.settings.distance.max" type="number"></ion-input>
+		</ion-item>
+
+		<!-- Duration -->
+		<ion-label class="ml-3">Duration range (hours)</ion-label>
+		<ion-item class="mx-4">
+			<ion-input placeholder="min" slot="start" [(ngModel)]="settingsService.settings.duration.min" type="number"></ion-input>
+			<span slot="start"> - </span>
+			<ion-input placeholder="max" class="float-right ml-3" [(ngModel)]="settingsService.settings.duration.max" type="number"></ion-input>
+		</ion-item>
+	</ion-list>
+
+	<ion-button expand="block" (click)="saveSettings()">
+		<span *ngIf="!isSaving">Save</span>
+		<ion-spinner name="dots" *ngIf="isSaving"></ion-spinner>
+	</ion-button>
+	<ion-button color="danger" expand="block" (click)="resetSettings()">
+		<span>Reset</span>
+	</ion-button>
+</ion-content>

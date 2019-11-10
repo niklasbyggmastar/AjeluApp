@@ -1,0 +1,28 @@
+.fullheight {
+	height: calc(100vh - 85px);
+}
+
+.verticalCenter {
+	position: relative;
+	top: 45%;
+	transform: translateY(-55%);
+	width: 100%;
+}
+
+.pullToBottom {
+	position: relative;
+	bottom: 0;
+}
+
+.mapContainer {
+	margin: 15px 0;
+}
+
+agm-map {
+	height: 350px !important;
+	width: 100%;
+}
+
+ion-icon {
+	font-size: 18px;
+}

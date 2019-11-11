@@ -75,6 +75,16 @@ app.get("/drive", (request, response) => {
         lat: parseFloat(request.query.latitude),
         lng: parseFloat(request.query.longitude)
     };
+
+    let destination = null;
+    if (request.query.destination_lat && request.query.destination_lng) {
+        destination = {
+            lat: parseFloat(request.query.destination_lat),
+            lng: parseFloat(request.query.destination_lng)
+        }
+    }
+    console.log("DESTINATION------------->", destination);
+
     numberOfWaypoints = initNumOfWaypoints; // Reset after each request
     generateRandomWaypoints(numberOfWaypoints);
     
@@ -83,10 +93,11 @@ app.get("/drive", (request, response) => {
         googleMapsClient.directions({
             origin: currentLocation,
             waypoints: waypoints,
-            destination: currentLocation,
+            destination: destination != null ? destination : currentLocation,
             mode: "driving",
             avoid: "ferries"
         }).asPromise().then((res) => {
+            console.log("\n\n\n\n\n\n\n\nRES",res.json.routes[0])
             if (res.json.routes && res.json.routes.length > 0) {
                 let legs = res.json.routes[0].legs;
                 let totalDuration = 0;

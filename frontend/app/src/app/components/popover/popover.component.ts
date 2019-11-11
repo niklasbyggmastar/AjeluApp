@@ -21,6 +21,7 @@ export class PopoverComponent implements OnInit {
 		this.isSaving = true;
 		this.settingsService.setSettings(this.settingsService.settings).then(() => {
 			this.isSaving = false;
+			this.toastService.showNotification("Settings saved successfully", null, "success");
 			this.popoverCtrl.dismiss();
 		}).catch(error => {
 			console.warn(error);

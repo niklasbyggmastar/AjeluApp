@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: "https://ajeluapp-backend.herokuapp.com", //http://localhost:8000
+  apiUrl: "http://localhost:8000", //http://localhost:8000 ---- https://ajeluapp-backend.herokuapp.com
   apiKey: "AIzaSyDqtbwziSqHQOnvnqdj-7egy-Dzi2QAYJY"
 };
 

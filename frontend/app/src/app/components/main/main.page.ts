@@ -36,7 +36,7 @@ export class MainPage implements AfterViewInit {
 		private http: HttpClient,
 		private geolocation: Geolocation,
 		private popoverController: PopoverController,
-		private settingsService: SettingsService,
+		public settingsService: SettingsService,
 		private platform: Platform,
 		private toastService: ToastService,
 		public commonService: CommonService
@@ -54,20 +54,17 @@ export class MainPage implements AfterViewInit {
 	}
 
 	placeMarker(event) {
-		console.log(event);
 		if (event && event.coords) {
 			let newLat = event.coords.lat;
 			let newLng = event.coords.lng;
-			this.settingsService.settings.destination.lat = newLat;
-			this.settingsService.settings.destination.lng = newLng;
-			this.getLocation(this.settingsService.settings.destination);
+			this.settingsService.settings.destination.coordinates.lat = newLat;
+			this.settingsService.settings.destination.coordinates.lng = newLng;
+			this.getLocation(this.settingsService.settings.destination.coordinates);
 		}
 	}
 
 	getLocation(data) {
-		console.log(data);
 		this.http.get(environment.apiUrl + "/location", { params: new HttpParams().set("latitude", data.lat.toString()).set("longitude", data.lng.toString()) }).toPromise().then((res) => {
-			console.log(res);
 			if (res) {
 				this.settingsService.settings.destination.full_address = res['formatted_address'];
 			}
@@ -77,16 +74,29 @@ export class MainPage implements AfterViewInit {
 	}
 	
 	saveDestination() {
-		console.log(this.settingsService.settings);
-		this.settingsService.saveSettings();
+		this.settingsService.saveSettings().then(() => {
+			this.commonService.setCustomDestination = false;
+			this.clearRouteValues();
+			this.routeCreated = false;
+			this.toastService.showNotification("Settings saved successfully", null, "success");
+		}).catch(error => {
+			console.warn(error);
+			this.toastService.showNotification("Error", error);
+		});
 	}
 
 	start() {
+		let destination = null;
+		if (this.settingsService.settings.destination.useCurrentLocation == true) {
+			destination = this.currentLocation;
+		} else if (this.settingsService.settings.destination.useCurrentLocation == false) {
+			destination = this.settingsService.settings.destination.coordinates;
+		}
 		window.open(`https://www.google.com/maps/dir/?api=1
-		&origin=${ this.currentLocation.lat}, ${this.currentLocation.lng}
-		&waypoints=${ this.formattedWaypoints}
-		&destination=${ this.currentLocation.lat}, ${this.currentLocation.lng} 
-		`, "_system"); // ${ this.waypoints[this.indexOfLastWaypoint].lat}, ${this.waypoints[this.indexOfLastWaypoint].lng}
+		&origin=${ this.currentLocation.lat}, ${ this.currentLocation.lng }
+		&waypoints=${ this.formattedWaypoints }
+		&destination=${ destination.lat}, ${ destination.lng } 
+		`, "_system");
 	}
 
 	generate() {
@@ -111,7 +121,7 @@ export class MainPage implements AfterViewInit {
 		this.setHttpParams();
 		this.http.get(environment.apiUrl + "/drive", { params: this.httpParams }).toPromise().then((res) => {
 			if (res && res[0]) {
-				res[0].legs.pop();
+				if (this.settingsService.settings.destination.useCurrentLocation == true) res[0].legs.pop();
 				this.buildWaypointsInfo(res[0].legs);
 				this.buildRouteInfo(res[0]);
 				this.indexOfLastWaypoint = this.waypoints.length - 1;
@@ -198,7 +208,19 @@ export class MainPage implements AfterViewInit {
 	}
 
 	setHttpParams() {
-		this.httpParams = new HttpParams().set("latitude", this.currentLocation.lat.toString()).set("longitude", this.currentLocation.lng.toString());
+		if (!this.settingsService.settings) {
+			this.settingsService.getSettings();
+		}
+		if (this.settingsService.settings.destination.useCurrentLocation == true) {
+			this.httpParams = new HttpParams().set("latitude", this.currentLocation.lat.toString()).set("longitude", this.currentLocation.lng.toString());
+		} else if (this.settingsService.settings.destination.useCurrentLocation == false) {
+			this.httpParams = new HttpParams()
+				.set("latitude", this.currentLocation.lat.toString())
+				.set("longitude", this.currentLocation.lng.toString())
+				.set("destination_lat", this.settingsService.settings.destination.coordinates.lat.toString())
+				.set("destination_lng", this.settingsService.settings.destination.coordinates.lng.toString());
+		}
+		
 	}
 
 	async openSettings(event) {

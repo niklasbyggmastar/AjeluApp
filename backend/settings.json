@@ -10,9 +10,11 @@
     },
     "destination": {
       "useCurrentLocation": false,
-      "lat": 60.45662274752743,
-      "lng": 22.249870057416047,
-      "full_address": "Johannegatan 15, 20100 Åbo, Finland"
+      "coordinates": {
+        "lat": 60.43537290998097,
+        "lng": 22.228689193725586
+      },
+      "full_address": "Linnankatu 80, 20100 Turku, Finland"
     }
   }
 }

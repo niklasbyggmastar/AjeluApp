@@ -9,7 +9,7 @@
 	<ion-card>
 		<ion-card-content [ngClass]="{ 'fullheight': routeCreated == false }">
 			<!-- Preview of the generated route -->
-			<div *ngIf="routeCreated && waypoints || commonService.setCustomDestination">
+			<div *ngIf="routeCreated && waypoints && !commonService.setCustomDestination">
 				<div class="ml-3" *ngIf="routeInfo.distance.text && routeInfo.duration.text">
 					<ion-icon name="information-circle-outline"></ion-icon>
 					<span>
@@ -17,6 +17,7 @@
 					</span>
 				</div>
 
+				<!-- MAP FOR SHOWING THE GENERATED ROUTE -->
 				<div class="mapContainer">
 					<div *ngIf="generateLoading" class="mapLoadingContainer">
 						<!--Loading-->
@@ -26,7 +27,7 @@
 						[showDirection]="true"
 						[origin]="currentLocation"
 						[waypoints]="waypoints"
-						[destination]="waypoints[indexOfLastWaypoint]"
+						[destination]="settingsService.settings.destination.useCurrentLocation == false ? waypoints[indexOfLastWaypoint] : settingsService.settings.destination.coordinates"
 						[optimizeWaypoints]="false"
 						[zoom]="14"
 						[disableDefaultUI]="false"
@@ -48,17 +49,24 @@
 				</div>
 			</div>
 
+			<!-- MAP FOR SELECTING A LOCATION -->
+			<div class="mapContainer" *ngIf="settingsService.settings && commonService.setCustomDestination">
+				<agm-map (mapClick)="placeMarker($event)" [latitude]="settingsService.settings.destination.coordinates.lat" [longitude]="settingsService.settings.destination.coordinates.lng">
+					<agm-marker [latitude]="settingsService.settings.destination.coordinates.lat" [longitude]="settingsService.settings.destination.coordinates.lng"></agm-marker>
+				</agm-map>
+			</div>
+
 			<!-- Buttons and propery settings -->
 			<div [ngClass]="routeCreated == false && !commonService.setCustomDestination ? 'verticalCenter' : 'pullToBottom'">
 				<ion-button *ngIf="!commonService.setCustomDestination" [disabled]="generateLoading || goLoading" (click)="generate()" color="primary" expand="block">
 					<span *ngIf="!generateLoading">GENERATE</span>
 					<ion-spinner name="dots" *ngIf="generateLoading"></ion-spinner>
 				</ion-button>
-				<ion-button [disabled]="generateLoading || goLoading" *ngIf="routeCreated" (click)="start()" color="success" expand="block">
+				<ion-button [disabled]="generateLoading || goLoading" *ngIf="routeCreated && !commonService.setCustomDestination" (click)="start()" color="success" expand="block">
 					<span *ngIf="!goLoading">GO!</span>
 					<ion-spinner name="dots" *ngIf="goLoading"></ion-spinner>
 				</ion-button>
-				<span *ngIf="settingsService.settings && commonService.setCustomDestination">selected: {{ settingsService.settings.destination | json }}</span>
+				<span *ngIf="settingsService.settings && settingsService.settings.destination && commonService.setCustomDestination">Current destination: {{ settingsService.settings.destination.full_address }}</span>
 				<ion-button *ngIf="commonService.setCustomDestination" (click)="saveDestination()" expand="block">
 					<span>Save destination</span>
 				</ion-button>

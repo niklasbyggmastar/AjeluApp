@@ -8,6 +8,7 @@ import { PopoverController, Platform } from '@ionic/angular';
 import { PopoverComponent } from '../popover/popover.component';
 import { SettingsService } from '../../services/settings.service';
 import { ToastService } from '../../services/toast.service';
+import { CommonService } from '../../services/common.service';
 
 @Component({
 	selector: 'app-main',
@@ -37,7 +38,8 @@ export class MainPage implements AfterViewInit {
 		private popoverController: PopoverController,
 		private settingsService: SettingsService,
 		private platform: Platform,
-		private toastService: ToastService
+		private toastService: ToastService,
+		public commonService: CommonService
 	) { }
 
 	ngAfterViewInit() {
@@ -51,13 +53,40 @@ export class MainPage implements AfterViewInit {
 		});
 	}
 
+	placeMarker(event) {
+		console.log(event);
+		if (event && event.coords) {
+			let newLat = event.coords.lat;
+			let newLng = event.coords.lng;
+			this.settingsService.settings.destination.lat = newLat;
+			this.settingsService.settings.destination.lng = newLng;
+			this.getLocation(this.settingsService.settings.destination);
+		}
+	}
+
+	getLocation(data) {
+		console.log(data);
+		this.http.get(environment.apiUrl + "/location", { params: new HttpParams().set("latitude", data.lat.toString()).set("longitude", data.lng.toString()) }).toPromise().then((res) => {
+			console.log(res);
+			if (res) {
+				this.settingsService.settings.destination.full_address = res['formatted_address'];
+			}
+		}).catch(error => {
+			console.warn(error);
+		});
+	}
+	
+	saveDestination() {
+		console.log(this.settingsService.settings);
+		this.settingsService.saveSettings();
+	}
+
 	start() {
-		console.log(this.formattedWaypoints);
 		window.open(`https://www.google.com/maps/dir/?api=1
 		&origin=${ this.currentLocation.lat}, ${this.currentLocation.lng}
 		&waypoints=${ this.formattedWaypoints}
-		&destination=${ this.waypoints[this.indexOfLastWaypoint].lat}, ${this.waypoints[this.indexOfLastWaypoint].lng}
-		`, "_system");
+		&destination=${ this.currentLocation.lat}, ${this.currentLocation.lng} 
+		`, "_system"); // ${ this.waypoints[this.indexOfLastWaypoint].lat}, ${this.waypoints[this.indexOfLastWaypoint].lng}
 	}
 
 	generate() {
@@ -82,6 +111,7 @@ export class MainPage implements AfterViewInit {
 		this.setHttpParams();
 		this.http.get(environment.apiUrl + "/drive", { params: this.httpParams }).toPromise().then((res) => {
 			if (res && res[0]) {
+				res[0].legs.pop();
 				this.buildWaypointsInfo(res[0].legs);
 				this.buildRouteInfo(res[0]);
 				this.indexOfLastWaypoint = this.waypoints.length - 1;
@@ -101,8 +131,9 @@ export class MainPage implements AfterViewInit {
 	}
 
 	formatWaypoints() {
+		this.formattedWaypoints = "";
 		for (let point of this.waypoints) {
-			this.formattedWaypoints += point.lat + ", " + point.lng + "%7C"
+			this.formattedWaypoints += point.lat + ", " + point.lng + "|"
 		}
 	}
 
@@ -121,7 +152,7 @@ export class MainPage implements AfterViewInit {
 		// Drive route info
 		this.routeInfo.distance.value = res.totalDistance;
 		this.routeInfo.duration.value = res.totalDuration;
-		this.routeInfo.distance.text = (this.routeInfo.distance.value).toFixed(2).toString() + " km";
+		this.routeInfo.distance.text = (this.routeInfo.distance.value).toFixed(0).toString() + " km";
 		this.routeInfo.duration.text = this.convertToHoursAndMin();
 	}
 

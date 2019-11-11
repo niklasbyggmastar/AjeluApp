@@ -11,6 +11,7 @@ import { MapDirectionsDirective } from '../../directives/map-directions.directiv
 import { PopoverComponent } from '../popover/popover.component';
 import { SettingsService } from '../../services/settings.service';
 import { ToastService } from '../../services/toast.service';
+import { CommonService } from '../../services/common.service';
 
 @NgModule({
 	imports: [
@@ -25,7 +26,8 @@ import { ToastService } from '../../services/toast.service';
 	],
 	providers: [
 		SettingsService,
-		ToastService
+		ToastService,
+		CommonService
 	],
 	declarations: [MainPage, MapDirectionsDirective, PopoverComponent],
 	exports: [PopoverComponent],

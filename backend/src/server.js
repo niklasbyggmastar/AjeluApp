@@ -175,7 +175,6 @@ function generateRandomWaypoints(number) {
             }
         )
     }
-    waypoints.push(currentLocation);
 }
 
 // Directions to one random location
@@ -205,9 +204,13 @@ app.get("/directions", (request, response) => {
     });
 });
 
+// Reverse geolocation: get location data using its coordinates
 app.get("/location", (request, response) => {
-    googleMapsClient.geocode({address: request.query.address}).asPromise().then((res) => {
-        response.json(res.json.results);
+    googleMapsClient.reverseGeocode({latlng: request.query}).asPromise().then((res) => {
+        console.log("RES", res.json.results[0]);
+        response.json(res.json.results[0]);
+    }).catch(error => {
+        console.warn(error);
     })
 });
 

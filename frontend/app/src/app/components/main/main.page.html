@@ -9,10 +9,10 @@
 	<ion-card>
 		<ion-card-content [ngClass]="{ 'fullheight': routeCreated == false }">
 			<!-- Preview of the generated route -->
-			<div *ngIf="routeCreated && waypoints">
-				<div class="ml-3">
+			<div *ngIf="routeCreated && waypoints || commonService.setCustomDestination">
+				<div class="ml-3" *ngIf="routeInfo.distance.text && routeInfo.duration.text">
 					<ion-icon name="information-circle-outline"></ion-icon>
-					<span *ngIf="routeInfo.distance.text && routeInfo.duration.text">
+					<span>
 						{{ routeInfo.distance.text }} - {{ routeInfo.duration.text }}
 					</span>
 				</div>
@@ -31,6 +31,7 @@
 						[zoom]="14"
 						[disableDefaultUI]="false"
 						[zoomControl]="false"
+						(mapClick)="placeMarker($event)"
 					>
 						<agm-marker *ngIf="currentLocation"
 							[latitude]="currentLocation.lat"
@@ -48,15 +49,18 @@
 			</div>
 
 			<!-- Buttons and propery settings -->
-			<div [ngClass]="routeCreated == false ? 'verticalCenter' : 'pullToBottom'">
-
-				<ion-button [disabled]="generateLoading || goLoading" (click)="generate()" color="primary" expand="block">
+			<div [ngClass]="routeCreated == false && !commonService.setCustomDestination ? 'verticalCenter' : 'pullToBottom'">
+				<ion-button *ngIf="!commonService.setCustomDestination" [disabled]="generateLoading || goLoading" (click)="generate()" color="primary" expand="block">
 					<span *ngIf="!generateLoading">GENERATE</span>
 					<ion-spinner name="dots" *ngIf="generateLoading"></ion-spinner>
 				</ion-button>
 				<ion-button [disabled]="generateLoading || goLoading" *ngIf="routeCreated" (click)="start()" color="success" expand="block">
 					<span *ngIf="!goLoading">GO!</span>
 					<ion-spinner name="dots" *ngIf="goLoading"></ion-spinner>
+				</ion-button>
+				<span *ngIf="settingsService.settings && commonService.setCustomDestination">selected: {{ settingsService.settings.destination | json }}</span>
+				<ion-button *ngIf="commonService.setCustomDestination" (click)="saveDestination()" expand="block">
+					<span>Save destination</span>
 				</ion-button>
 			</div>
 			

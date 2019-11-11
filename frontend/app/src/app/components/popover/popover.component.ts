@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SettingsService } from 'src/app/services/settings.service';
 import { PopoverController } from '@ionic/angular';
 import { ToastService } from '../../services/toast.service';
+import { CommonService } from '../../services/common.service';
 
 @Component({
 	selector: 'app-popover',
@@ -12,7 +13,7 @@ export class PopoverComponent implements OnInit {
 	
 	isSaving: boolean = false;
 
-	constructor(public settingsService: SettingsService, private popoverCtrl: PopoverController, private toastService: ToastService) { }
+	constructor(public settingsService: SettingsService, private popoverCtrl: PopoverController, private toastService: ToastService, private commonService: CommonService) { }
 
 	ngOnInit() {}
 
@@ -25,6 +26,11 @@ export class PopoverComponent implements OnInit {
 			console.warn(error);
 			this.toastService.showNotification("Error", error);
 		});
+	}
+
+	setCustomLocation() {
+		this.commonService.setCustomDestination = true;
+		this.popoverCtrl.dismiss();
 	}
 
 	resetSettings() {

@@ -7,6 +7,12 @@
     "duration": {
       "min": 0,
       "max": 10
+    },
+    "destination": {
+      "useCurrentLocation": false,
+      "lat": 60.45662274752743,
+      "lng": 22.249870057416047,
+      "full_address": "Johannegatan 15, 20100 Åbo, Finland"
     }
   }
 }

@@ -24,6 +24,12 @@ export class SettingsService {
         return this.http.get(environment.apiUrl + `/settings/${key}`).toPromise();
     }
 
+    saveSettings() {
+        return this.http.post(environment.apiUrl + "/settings", this.settings).toPromise().then((res) => {
+            console.log("Settings saved!");
+        });
+    }
+
     // Update local settings variable after updating stored values
     setSettings(newSettings) {
         return this.http.post(environment.apiUrl + "/settings", newSettings).toPromise().then((res) => {

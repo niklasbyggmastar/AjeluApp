@@ -5,15 +5,20 @@
 	</ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content *ngIf="settingsLoading">
+	<ion-progress-bar type="indeterminate"></ion-progress-bar>
+</ion-content>
+
+<ion-content *ngIf="!settingsLoading">
 	<ion-card>
 		<ion-card-content [ngClass]="{ 'fullheight': routeCreated == false }">
 			<!-- Preview of the generated route -->
 			<div *ngIf="routeCreated && waypoints && !commonService.setCustomDestination">
 				<div class="ml-3" *ngIf="routeInfo.distance.text && routeInfo.duration.text">
-					<ion-icon name="information-circle-outline"></ion-icon>
 					<span>
+						<ion-icon name="information-circle-outline"></ion-icon>
 						{{ routeInfo.distance.text }} - {{ routeInfo.duration.text }}
+						<ion-icon class="float-right" (click)="addToFavorites()" name="star-outline" size="large" slot="end"></ion-icon> <!--class="mr-3"-->
 					</span>
 				</div>
 
@@ -27,7 +32,7 @@
 						[showDirection]="true"
 						[origin]="currentLocation"
 						[waypoints]="waypoints"
-						[destination]="settingsService.settings.destination.useCurrentLocation == false ? waypoints[indexOfLastWaypoint] : settingsService.settings.destination.coordinates"
+						[destination]="waypoints[indexOfLastWaypoint]"
 						[optimizeWaypoints]="false"
 						[zoom]="14"
 						[disableDefaultUI]="false"

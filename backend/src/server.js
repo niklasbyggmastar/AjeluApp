@@ -14,10 +14,11 @@ app.disable('etag');
 const port = 8000;
 
 let localSettings = [];
-// Database for settings
+let localFavorites = [];
+// Database
 const low = require('lowdb');
 const FileAsync = require('lowdb/adapters/FileAsync');
-const adapter = new FileAsync('./settings.json');
+const adapter = new FileAsync('./db.json');
 
 low(adapter).then(db => {
     // Initially get all settings (Works on localhost but not Heroku)
@@ -40,6 +41,28 @@ low(adapter).then(db => {
             .then((res) => {
                 console.log("RES", res);
                 localSettings = res;
+                response.json(res);
+            })
+    });
+
+    // Request to get all favorites
+    app.get("/favorites", (request, response) => {
+        const favorites = db.get("favorites").value();
+        localFavorites = favorites;
+        response.json(favorites);
+    });
+
+    // Request to update favorites (all)
+    app.post("/favorites", (request, response) => {
+        const newFavorite = request.body;
+        console.log("NEW", newFavorite);
+        localFavorites = db.get("favorites").value();
+        localFavorites.push(newFavorite);
+        db.get("favorites")
+            .assign({ localFavorites })
+            .write()
+            .then((res) => {
+                localFavorites = res;
                 response.json(res);
             })
     });

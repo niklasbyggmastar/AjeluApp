@@ -17,7 +17,7 @@ export class ToastService {
 			position: 'top',
 			color: color ? color : 'danger',
 			showCloseButton: true,
-			duration: color == "danger" ? 0 : 3000
+			duration: color == "danger" || color == null ? 0 : 3000
 		});
 		this.toast.present();
 	}

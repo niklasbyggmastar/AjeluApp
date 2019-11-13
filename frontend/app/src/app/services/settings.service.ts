@@ -12,7 +12,7 @@ export class SettingsService {
     constructor(private http: HttpClient) {}
 
     getSettings() {
-        this.http.get(environment.apiUrl + "/settings").toPromise().then((settings) => {
+        return this.http.get(environment.apiUrl + "/settings").toPromise().then((settings) => {
             if (settings) {
                 console.log(settings);
                 this.settings = settings;

@@ -17,6 +17,7 @@ import { CommonService } from '../../services/common.service';
 })
 export class MainPage implements AfterViewInit {
 
+	settingsLoading: boolean = true;
 	generateLoading: boolean = false;
 	goLoading: boolean = false;
 	routeCreated: boolean = false;
@@ -45,8 +46,30 @@ export class MainPage implements AfterViewInit {
 	ngAfterViewInit() {
 		this.platform.ready().then((res) => {
 			// Get settings + location right away
-			this.settingsService.getSettings();
+			this.settingsService.getSettings().then(() => {
+				this.settingsLoading = false;
+			}).catch(error => {
+				console.warn(error);
+				this.toastService.showNotification("Error", error);
+			});
 			this.getCurrentLocation();
+		}).catch(error => {
+			console.warn(error);
+			this.toastService.showNotification("Error", error);
+		});
+	}
+
+	addToFavorites() {
+		let data = {
+			origin: this.currentLocation,
+			waypoints: this.waypoints,
+			destination: this.waypoints[this.indexOfLastWaypoint],
+			info: this.routeInfo
+		}
+
+		this.http.post(environment.apiUrl + "/favorites", data).toPromise().then((res) => {
+			console.log(res);
+			this.toastService.showNotification("Favorite added successfully", null, "success");
 		}).catch(error => {
 			console.warn(error);
 			this.toastService.showNotification("Error", error);
@@ -102,6 +125,11 @@ export class MainPage implements AfterViewInit {
 	generate() {
 		this.platform.ready().then((res) => {
 			this.generateLoading = true;
+			if (this.settingsService.settings.destination.useCurrentLocation == true) {
+				this.destination = this.currentLocation;
+			 } else {
+				this.destination = this.settingsService.settings.destination.coordinates;
+			 } 
 			if (!this.currentLocation) {
 				this.getCurrentLocation(() => {
 					this.requestDrive();
@@ -207,9 +235,12 @@ export class MainPage implements AfterViewInit {
 		this.routeInfo.distance.value = 0;
 	}
 
-	setHttpParams() {
+	async setHttpParams() {
 		if (!this.settingsService.settings) {
-			this.settingsService.getSettings();
+			await this.settingsService.getSettings().catch(error => {
+				console.warn(error);
+				this.toastService.showNotification("Error", error);
+			});
 		}
 		if (this.settingsService.settings.destination.useCurrentLocation == true) {
 			this.httpParams = new HttpParams().set("latitude", this.currentLocation.lat.toString()).set("longitude", this.currentLocation.lng.toString());

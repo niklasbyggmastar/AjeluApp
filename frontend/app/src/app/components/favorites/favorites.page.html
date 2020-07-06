@@ -1,0 +1,20 @@
+<ion-content *ngIf="isLoading">
+	<ion-progress-bar type="indeterminate"></ion-progress-bar>
+</ion-content>
+
+<ion-content *ngIf="!isLoading">
+	<ion-card>
+		<ion-card-content>
+			<h1>Favorites</h1>
+			<div class="listItem" *ngFor="let favorite of favorites; let i = index">
+				{{ favorite.info.duration.text }}
+				<div class="float-right mr-1" (click)="startNavigation(i)">
+					<ion-icon color="success" name="play"></ion-icon>
+				</div>
+				<div class="float-right mr-3" (click)="showInfo(i)">
+					<ion-icon color="secondary" name="information-circle-outline"></ion-icon>
+				</div>
+			</div>
+		</ion-card-content>
+	</ion-card>
+</ion-content>

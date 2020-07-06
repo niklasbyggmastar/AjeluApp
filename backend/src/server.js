@@ -21,8 +21,9 @@ const FileAsync = require('lowdb/adapters/FileAsync');
 const adapter = new FileAsync('./db.json');
 
 low(adapter).then(db => {
-    // Initially get all settings (Works on localhost but not Heroku)
+    // Initially get all settings+favorites (Works on localhost but not Heroku)
     localSettings = db.get("settings").value();
+    localFavorites = db.get("favorites").value();
 
     // Request to get all settings
     app.get("/settings", (request, response) => {

@@ -1,0 +1,19 @@
+<!--<ion-content *ngIf="!settingsService.settings">
+	<ion-text class="d-block m-auto ion-text-center">Loading</ion-text>
+	<ion-spinner class="d-block m-auto" name="dots"></ion-spinner>
+</ion-content>-->
+
+<ion-content>
+	<ion-list fullscreen>
+		<ion-list-header size="large">Route info</ion-list-header>
+
+		<!-- Distance -->
+		<ion-label class="ml-3">Distance range (km)</ion-label>
+		<ion-item class="mx-4 mb-2">{{data|json}}</ion-item>
+
+	</ion-list>
+
+	<ion-button color="medium" expand="block" (click)="close()">
+		<span>Close</span>
+	</ion-button>
+</ion-content>

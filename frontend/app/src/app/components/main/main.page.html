@@ -1,10 +1,3 @@
-<ion-header>
-	<ion-toolbar>
-		<ion-title>AjeluApp</ion-title>
-		<ion-icon (click)="openSettings($event)" name="settings" slot="end" size="large" class="mr-3"></ion-icon>
-	</ion-toolbar>
-</ion-header>
-
 <ion-content *ngIf="settingsLoading">
 	<ion-progress-bar type="indeterminate"></ion-progress-bar>
 </ion-content>
@@ -61,7 +54,7 @@
 				</agm-map>
 			</div>
 
-			<!-- Buttons and propery settings -->
+			<!-- Buttons and property settings -->
 			<div [ngClass]="routeCreated == false && !commonService.setCustomDestination ? 'verticalCenter' : 'pullToBottom'">
 				<ion-button *ngIf="!commonService.setCustomDestination" [disabled]="generateLoading || goLoading" (click)="generate()" color="primary" expand="block">
 					<span *ngIf="!generateLoading">GENERATE</span>

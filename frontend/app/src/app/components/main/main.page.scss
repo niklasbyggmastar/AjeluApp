@@ -1,6 +1,4 @@
-.fullheight {
-	height: calc(100vh - 85px);
-}
+@import "../../../assets/styles.scss";
 
 .verticalCenter {
 	position: relative;
@@ -21,8 +19,4 @@
 agm-map {
 	height: 350px !important;
 	width: 100%;
-}
-
-ion-icon {
-	font-size: 18px;
 }

@@ -1,0 +1,47 @@
+<ion-content *ngIf="isLoading">
+	<ion-progress-bar type="indeterminate"></ion-progress-bar>
+</ion-content>
+
+<ion-content *ngIf="!isLoading">
+	<ion-card>
+		<ion-card-content>
+			<h1 class="mb-3">Settings</h1>
+			<!-- Distance -->
+			<ion-label>Distance range (km)</ion-label>
+			<ion-item class="mb-2">
+				<ion-input placeholder="min" slot="start" [(ngModel)]="settingsService.settings.distance.min" type="number"></ion-input>
+				<span slot="start"> - </span>
+				<ion-input placeholder="max" slot="end" class="float-right" [(ngModel)]="settingsService.settings.distance.max" type="number"></ion-input>
+			</ion-item>
+
+			<!-- Duration -->
+			<ion-label class="">Duration range (hours)</ion-label>
+			<ion-item class="mb-2">
+				<ion-input placeholder="min" slot="start" [(ngModel)]="settingsService.settings.duration.min" type="number"></ion-input>
+				<span slot="start"> - </span>
+				<ion-input placeholder="max" slot="end" class="float-right" [(ngModel)]="settingsService.settings.duration.max" type="number"></ion-input>
+			</ion-item>
+
+			<!-- Custom destination -->
+			<ion-label class="">Destination</ion-label>
+			<ion-item lines="none" class="mr-3 mb-2 ion-text-wrap">
+				<ion-label style="font-size: 14px;">Use current location</ion-label>
+				<ion-toggle [(ngModel)]="settingsService.settings.destination.useCurrentLocation"></ion-toggle>
+			</ion-item>
+			<ion-item *ngIf="!settingsService.settings.destination.useCurrentLocation">
+				<ion-input [(ngModel)]="settingsService.settings.destination.full_address" placeholder="Address" type="text"></ion-input>
+				<ion-button (click)="setCustomLocation()">
+					<ion-icon name="pin"></ion-icon>
+				</ion-button>
+			</ion-item>
+		</ion-card-content>
+	</ion-card>
+
+	<ion-button expand="block" (click)="saveSettings()">
+		<span *ngIf="!isSaving">Save</span>
+		<ion-spinner name="dots" *ngIf="isSaving"></ion-spinner>
+	</ion-button>
+	<ion-button color="medium" expand="block" (click)="resetSettings()">
+		<span>Cancel</span>
+	</ion-button>
+</ion-content>

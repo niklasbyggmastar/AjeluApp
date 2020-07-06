@@ -4,11 +4,11 @@ import { environment } from "../../../environments/environment";
 import { Location } from "../../models/location.model";
 import { RouteInfo } from '../../models/route.model';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
-import { PopoverController, Platform } from '@ionic/angular';
-import { PopoverComponent } from '../popover/popover.component';
+import { Platform } from '@ionic/angular';
 import { SettingsService } from '../../services/settings.service';
 import { ToastService } from '../../services/toast.service';
 import { CommonService } from '../../services/common.service';
+import { Router } from '@angular/router';
 
 @Component({
 	selector: 'app-main',
@@ -36,15 +36,15 @@ export class MainPage implements AfterViewInit {
 	constructor(
 		private http: HttpClient,
 		private geolocation: Geolocation,
-		private popoverController: PopoverController,
 		public settingsService: SettingsService,
 		private platform: Platform,
 		private toastService: ToastService,
-		public commonService: CommonService
+		public commonService: CommonService,
+		private router: Router
 	) { }
 
 	ngAfterViewInit() {
-		this.platform.ready().then((res) => {
+		this.platform.ready().then(() => {
 			// Get settings + location right away
 			this.settingsService.getSettings().then(() => {
 				this.settingsLoading = false;
@@ -98,6 +98,7 @@ export class MainPage implements AfterViewInit {
 	
 	saveDestination() {
 		this.settingsService.saveSettings().then(() => {
+			this.router.navigateByUrl("settings");
 			this.commonService.setCustomDestination = false;
 			this.clearRouteValues();
 			this.routeCreated = false;
@@ -251,15 +252,5 @@ export class MainPage implements AfterViewInit {
 				.set("destination_lat", this.settingsService.settings.destination.coordinates.lat.toString())
 				.set("destination_lng", this.settingsService.settings.destination.coordinates.lng.toString());
 		}
-		
-	}
-
-	async openSettings(event) {
-		const popover = await this.popoverController.create({
-			component: PopoverComponent,
-			event: event,
-			translucent: true
-		});
-		return await popover.present();
 	}
 }

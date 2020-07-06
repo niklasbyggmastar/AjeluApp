@@ -1,0 +1,29 @@
+ion-icon {
+	font-size: 18px;
+}
+
+ion-card {
+	margin-top: 60px;
+	height: calc(100vh - 127px);
+}
+
+.fullheight {
+	height: calc(100vh - 127px);
+}
+
+.verticalCenter {
+	position: relative;
+	top: 45%;
+	transform: translateY(-55%);
+	width: 100%;
+}
+
+.pullToBottom {
+	position: relative;
+	bottom: 0;
+}
+
+.listItem {
+	border-bottom: .33px solid lightgray;
+	padding: 10px 0;
+}
